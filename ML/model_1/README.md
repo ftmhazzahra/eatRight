@@ -1,5 +1,3 @@
-# Generate a README.md file with the content provided
-readme_content = """
 # Obesity Level Prediction Model
 
 This repository contains a machine learning model that predicts obesity levels based on personal attributes, lifestyle, and dietary habits. The model is built using TensorFlow/Keras and is designed to be deployed as an API for real-time predictions.
