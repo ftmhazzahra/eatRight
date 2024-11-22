@@ -1,26 +1,50 @@
 from flask import Flask, request, jsonify
-import tensorflow as tf
 import numpy as np
-
-model = tf.keras.models.load_model("obesity_prediction_model.h5")
+import pandas as pd
+from tensorflow.keras.models import load_model
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 app = Flask(__name__)
 
+model = load_model("obesity_prediction_model.h5")
+
+# Load dataset to set up encoders and scaler (ensure the dataset is the same as used for training)
+file_path = r"E:\ammar\eatRight\dataset\obesity classification\ObesityDataSet_raw_and_data_sinthetic.csv" # ubah path seusai dataset msing masing
+data = pd.read_csv(file_path)
+
+label_encoders = {}
+for col in data.select_dtypes(include="object").columns:
+    le = LabelEncoder()
+    data[col] = le.fit_transform(data[col])
+    label_encoders[col] = le
+
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(data.drop(columns=["NObeyesdad"])) 
+
 @app.route('/predict', methods=['POST'])
 def predict():
-    data = request.json
     try:
-        # Validate input feature length
-        input_features = np.array(data['features'])
-        if input_features.shape[0] != 16:  # Replace 16 with the correct feature count
-            return jsonify({"error": f"Expected 16 features, but received {input_features.shape[0]}"}), 400
-
-        input_features = input_features.reshape(1, -1)
-        prediction = model.predict(input_features)
-        predicted_class = int(np.argmax(prediction, axis=1)[0])
-        return jsonify({"predicted_obesity_level": predicted_class})
+        input_data = request.json
+        
+        features = pd.DataFrame([input_data])
+        
+        expected_columns = data.drop(columns=["NObeyesdad"]).columns
+        features = features[expected_columns]
+        
+        for col, encoder in label_encoders.items():
+            if col in features.columns:
+                features[col] = encoder.transform(features[col])
+        
+        features_scaled = scaler.transform(features)
+        
+        predictions = model.predict(features_scaled)
+        predicted_class = np.argmax(predictions, axis=1)
+        
+        decoded_prediction = label_encoders["NObeyesdad"].inverse_transform(predicted_class)
+        
+        return jsonify({"prediction": decoded_prediction[0]})
     except Exception as e:
         return jsonify({"error": str(e)})
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5500)
+if __name__ == '__main__':
+    app.run(debug=True)

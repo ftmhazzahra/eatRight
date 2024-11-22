@@ -49,7 +49,7 @@ The target variable is the **Obesity Level**, categorized into various levels su
 
 ## **Results**
 
-- **Test Accuracy**: 91.48%
+- **Test Accuracy**: 95.89%
 - **Test Loss**: 0.23
 
 The model performs well with a high classification accuracy on the test dataset.
@@ -80,25 +80,30 @@ OC_deploys.py
 Use `curl` or a tool like Postman to send POST requests to the API:
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{
-  "features": [
-    -0.5082512769523888,
-    0.21708608747503674,
-    0.4166879186309691,
-    0.7025637659198204,
-    1.3715296537859547,
-    0.6971408355703766,
-    -3.1628226450823056,
-    -1.2012308355442176,
-    -0.3732090562703104,
-    0.6762367368859359,
-    -1.0412561997824246,
-    0.0967646493526264,
-    1.3639655231547303,
-    0.8009764911986628,
-    0.6764400612809583,
-    2.489748360679963
-  ]
-}' http://localhost:5500/predict
+    "Gender": "Male",
+    "Age": 23,
+    "Height": 1.8,
+    "Weight": 77,
+    "family_history_with_overweight": "yes",
+    "FAVC": "no",
+    "FCVC": 2,
+    "NCP": 3,
+    "CAEC": "Sometimes",
+    "SMOKE": "no",
+    "CH2O": 2,
+    "SCC": "no",
+    "FAF": 2,
+    "TUE": 1,
+    "CALC": "Sometimes",
+    "MTRANS": "Public_Transportation"
+}' http://127.0.0.1:5000/predict
+```
+Output Example: The API returns:
+```bash
+{
+    "prediction": "Normal_Weight"
+}
+
 ```
 
 The response will include the predicted obesity level.
