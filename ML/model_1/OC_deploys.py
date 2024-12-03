@@ -9,7 +9,7 @@ app = Flask(__name__)
 model = load_model("obesity_prediction_model.h5")
 
 # Load dataset to set up encoders and scaler (ensure the dataset is the same as used for training)
-file_path = r"E:\ammar\eatRight\dataset\obesity classification\ObesityDataSet_raw_and_data_sinthetic.csv" # ubah path seusai dataset msing masing
+file_path = r"obesity classification/ObesityDataSet_raw_and_data_sinthetic.csv"
 data = pd.read_csv(file_path)
 
 label_encoders = {}
